@@ -1,0 +1,249 @@
+{
+	"info": {
+		"_postman_id": "909a52f9-2418-4684-af7d-dd73a0ffaf2e",
+		"name": "Day 5",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40789429",
+		"_collection_link": "https://example-7388.postman.co/workspace/New-Team-Workspace~fb849f1d-46c8-4461-9194-a590f151b562/collection/40789429-909a52f9-2418-4684-af7d-dd73a0ffaf2e?action=share&source=collection_link&creator=40789429"
+	},
+	"item": [
+		{
+			"name": "Register Client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Access token is present\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"accessToken\");\r",
+							"});\r",
+							"pm.collectionVariables.set(\"authToken\", pm.response.json().accessToken);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"Nagoor\",\r\n   \"clientEmail\": \"{{$randomEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{bookurl}}/api-clients",
+					"host": [
+						"{{bookurl}}"
+					],
+					"path": [
+						"api-clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Order placed successfully\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.environment.set(\"orderId\", jsonData.orderId);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bookId\": 1,\r\n  \"customerName\": \"John\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{bookurl}}/orders",
+					"host": [
+						"{{bookurl}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Get Customer Name\", function(){\r",
+							"    let name=pm.collectionVariables.get(\"customerName\");\r",
+							"    pm.expect(name).to.not.be.null;\r",
+							"\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bookurl}}/orders/7G_hnlXylqTCt8DzgcVIA",
+					"host": [
+						"{{bookurl}}"
+					],
+					"path": [
+						"orders",
+						"7G_hnlXylqTCt8DzgcVIA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const books = pm.response.json();\r",
+							"// pm.test(\"valid data types\", function () {\r",
+							"//     books.forEach(book => {\r",
+							"//         pm.expect(book.id).to.be.a(\"number\");\r",
+							"//         pm.expect(book.name).to.be.a(\"string\");\r",
+							"//     });\r",
+							"// });\r",
+							"\r",
+							"// books.forEach(book => {\r",
+							"//     if (book.type === \"fiction\") {\r",
+							"//         pm.test(`Book ${book.name} is fiction`, function () {\r",
+							"//             pm.expect(book.type).to.equal(\"fiction\");\r",
+							"//         });\r",
+							"//     }\r",
+							"// });\r",
+							"\r",
+							"// let found = false;\r",
+							"// books.forEach(book => {\r",
+							"//     if (book.name === \"The Russian\") {\r",
+							"//         found = true;\r",
+							"//     }\r",
+							"// });\r",
+							"// pm.test(\"The Russian is in the list\", function () {\r",
+							"//     pm.expect(found).to.be.true;\r",
+							"// });\r",
+							"\r",
+							"// books.forEach(book => {\r",
+							"//     pm.test(`Book ID ${book.id} is valid`, function () {\r",
+							"//         pm.expect(books).to.be.an(\"array\");\r",
+							"//         pm.expect(book.id).to.be.a(\"number\");\r",
+							"//     });\r",
+							"// });\r",
+							"\r",
+							"\r",
+							"const book = books.find(b => b.id === 1);\r",
+							"pm.test(\"Book with ID 1 found\", function () {\r",
+							"    pm.expect(book).to.not.be.undefined;\r",
+							"    pm.expect(book.name).to.be.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{bookurl}}/books/?type=fiction",
+					"host": [
+						"{{bookurl}}"
+					],
+					"path": [
+						"books",
+						""
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "fiction"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "bookurl",
+			"value": "https://simple-books-api.glitch.me"
+		},
+		{
+			"key": "authToken",
+			"value": ""
+		},
+		{
+			"key": "customerName",
+			"value": ""
+		},
+		{
+			"key": "bookId",
+			"value": ""
+		}
+	]
+}
